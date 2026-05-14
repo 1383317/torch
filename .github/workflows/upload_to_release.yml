@@ -1,0 +1,19 @@
+name: Remote Download to Release
+on:
+  workflow_dispatch: # اجازه اجرای دستی را به ما می‌دهد
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download File
+        run: |
+          wget "https://download-r2.pytorch.org/whl/cu121/torch-2.5.1%2Bcu121-cp312-cp312-win_amd64.whl" -O pytorch_file.whl
+
+      - name: Create Release and Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.0
+          files: pytorch_file.whl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
