@@ -1,6 +1,6 @@
-name: Remote Download to Release
+name: Remote Download and Split to Release
 on:
-  workflow_dispatch: # اجازه اجرای دستی را به ما می‌دهد
+  workflow_dispatch:
 
 jobs:
   build:
@@ -10,10 +10,15 @@ jobs:
         run: |
           wget "https://download-r2.pytorch.org/whl/cu121/torch-2.5.1%2Bcu121-cp312-cp312-win_amd64.whl" -O pytorch_file.whl
 
+      - name: Split File into Chunks
+        run: |
+          # این دستور فایل را به پارت‌های 1.5 گیگابایتی تقسیم می‌کند
+          split -b 1500M pytorch_file.whl pytorch_file.whl.part_
+
       - name: Create Release and Upload
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.0
-          files: pytorch_file.whl
+          tag_name: v1.0.1
+          files: pytorch_file.whl.part_*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
